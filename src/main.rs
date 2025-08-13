@@ -1,9 +1,44 @@
+
 fn main() {
     // age_validator();
 
-    type_validator();
+    // type_validator();
+
+    first_name();
 
 }
+
+fn first_name() {
+    let first_name_arg = clap::Arg::new("first-name")
+        .long("first-name")
+        .help("Please enter your first name with a capital letter.")
+        .value_parser(first_name_validator);
+
+    let cmd = clap::Command::new("base")
+        .arg(first_name_arg);
+
+    let result = cmd.get_matches();
+    
+    println!("The first name you entered was {0}",
+        result.get_one::<String>("first-name").unwrap());
+
+}
+
+fn first_name_validator(value: &str) -> Result<String, std::io::Error> {
+
+    let first_name_regex = regex::Regex::new("[A-Z]\\w+")
+        .expect("You wrote an invalid regex. Please fix it.");
+
+    if first_name_regex.is_match(value) {
+        return Ok(value.to_string())
+    }
+
+
+    return Err(std::io::Error::new(std::io::ErrorKind::Other,
+         "Please make sure first name is capitalied"));
+}
+
+
 
 fn type_validator() {
     let coat_types = ["winter", "rain", "hoodie"];
